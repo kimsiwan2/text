@@ -270,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Save record to local storage
         users.push(newUser);
         localStorage.setItem('yju_users', JSON.stringify(users));
+        localStorage.setItem('yju_active_user', JSON.stringify(newUser));
 
         // Populate Success Modal Fields
         document.getElementById('db-number').textContent = newUser.number;
