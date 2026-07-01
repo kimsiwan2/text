@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영진전문대학교 - 로그인</title>
+    <!-- Google Fonts: Outfit & Noto Sans KR -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Add minor login-specific styles here if needed */
+        .auth-switch-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 20px;
+        }
+        .auth-switch-text a {
+            color: var(--yju-accent);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 6px;
+            transition: color 0.3s ease;
+        }
+        .auth-switch-text a:hover {
+            color: var(--white);
+            text-decoration: underline;
+        }
+        /* Custom styles for error toast notifications */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: -300px;
+            background: rgba(244, 63, 94, 0.9);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            backdrop-filter: blur(10px);
+            color: var(--white);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast-notification.active {
+            right: 20px;
+        }
+        .toast-notification i {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="container">
+        <div class="signup-card">
+            <!-- Header with logo and title -->
+            <div class="card-header">
+                <div class="logo-container">
+                    <svg class="yju-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 10 L85 25 V55 C85 75 68 90 50 95 C32 90 15 75 15 55 V25 L50 10 Z" fill="var(--yju-primary)" stroke="var(--yju-accent)" stroke-width="4"/>
+                        <path d="M35 35 L50 52 L65 35" stroke="var(--white)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M50 52 V75" stroke="var(--white)" stroke-width="6" stroke-linecap="round"/>
+                        <path d="M30 65 Q50 72 70 65" stroke="var(--yju-accent)" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h1 class="brand-title">YEUNGJIN</h1>
+                <p class="brand-subtitle">영진전문대학교 로그인</p>
+            </div>
+
+            <!-- Form -->
+            <form id="login-form" novalidate>
+                <!-- ID Field -->
+                <div class="input-group" id="group-id">
+                    <label for="user_id"><i class="fa-regular fa-user"></i> 아이디</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="user_id" name="user_id" placeholder="아이디를 입력해 주세요" required>
+                    </div>
+                    <p class="helper-text">아이디를 입력해 주세요.</p>
+                </div>
+
+                <!-- Password Field -->
+                <div class="input-group" id="group-password">
+                    <label for="password"><i class="fa-regular fa-key"></i> 비밀번호</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="비밀번호를 입력해 주세요" required>
+                        <button type="button" class="toggle-password" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
+                    </div>
+                    <p class="helper-text">비밀번호를 입력해 주세요.</p>
+                </div>
+
+                <!-- Remember ID checkbox -->
+                <div class="checkbox-group">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="remember_id" name="remember_id">
+                        <span class="checkmark"></span>
+                        <span class="checkbox-text">아이디 저장</span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-submit" id="btn-submit">
+                    <span class="btn-text">로그인</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+
+                <!-- Auth Switch Options -->
+                <p class="auth-switch-text">
+                    아직 회원이 아니신가요? 
+                    <a href="index.html">회원가입하기</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Error Toast Notification -->
+    <div class="toast-notification" id="login-toast">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="toast-message">아이디 또는 비밀번호가 잘못되었습니다.</span>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="login.js"></script>
+</body>
+</html>
