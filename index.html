@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영진전문대학교 - 회원가입</title>
+    <!-- Google Fonts: Outfit & Noto Sans KR -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="container">
+        <div class="signup-card">
+            <!-- Header with logo and title -->
+            <div class="card-header">
+                <div class="logo-container">
+                    <svg class="yju-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Shield/Emblem shape -->
+                        <path d="M50 10 L85 25 V55 C85 75 68 90 50 95 C32 90 15 75 15 55 V25 L50 10 Z" fill="var(--yju-primary)" stroke="var(--yju-accent)" stroke-width="4"/>
+                        <!-- Stylized YJU letters or book/laurel inside -->
+                        <path d="M35 35 L50 52 L65 35" stroke="var(--white)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M50 52 V75" stroke="var(--white)" stroke-width="6" stroke-linecap="round"/>
+                        <path d="M30 65 Q50 72 70 65" stroke="var(--yju-accent)" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h1 class="brand-title">YEUNGJIN</h1>
+                <p class="brand-subtitle">영진전문대학교 회원가입</p>
+            </div>
+
+            <!-- Form -->
+            <form id="signup-form" novalidate>
+                <!-- ID Field -->
+                <div class="input-group" id="group-id">
+                    <label for="user_id"><i class="fa-regular fa-user"></i> 아이디</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="user_id" name="user_id" placeholder="영문, 숫자 조합 4~20자" required>
+                        <span class="status-icon"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                    <p class="helper-text">아이디를 입력하세요.</p>
+                </div>
+
+                <!-- Password Field -->
+                <div class="input-group" id="group-password">
+                    <label for="password"><i class="fa-regular fa-key"></i> 비밀번호</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="영문, 숫자, 특수문자 조합 8자 이상" required>
+                        <button type="button" class="toggle-password" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
+                        <span class="status-icon"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                    <!-- Password strength indicator -->
+                    <div class="strength-bar-container">
+                        <div class="strength-bar" id="strength-bar"></div>
+                    </div>
+                    <p class="helper-text">비밀번호를 입력하세요.</p>
+                </div>
+
+                <!-- Password Confirm Field -->
+                <div class="input-group" id="group-password-confirm">
+                    <label for="password_confirm"><i class="fa-regular fa-circle-check"></i> 비밀번호 확인</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password_confirm" name="password_confirm" placeholder="비밀번호를 한번 더 입력해 주세요" required>
+                        <button type="button" class="toggle-password" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
+                        <span class="status-icon"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                    <p class="helper-text">비밀번호 확인을 입력하세요.</p>
+                </div>
+
+                <!-- Email Field -->
+                <div class="input-group" id="group-email">
+                    <label for="email"><i class="fa-regular fa-envelope"></i> 이메일</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" placeholder="example@yju.ac.kr" required>
+                        <span class="status-icon"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                    <p class="helper-text">올바른 이메일 주소를 입력하세요.</p>
+                </div>
+
+                <!-- Phone Field -->
+                <div class="input-group" id="group-phone">
+                    <label for="phone"><i class="fa-regular fa-mobile-screen-button"></i> 전화번호</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone" name="phone" placeholder="010-0000-0000" maxlength="13" required>
+                        <span class="status-icon"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                    <p class="helper-text">휴대폰 번호를 입력하세요.</p>
+                </div>
+
+                <!-- Terms and Conditions Checkbox (Optional, but gives premium feel) -->
+                <div class="checkbox-group">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="agree_terms" name="agree_terms" required>
+                        <span class="checkmark"></span>
+                        <span class="checkbox-text">개인정보 수집 및 이용에 동의합니다. (필수)</span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-submit" id="btn-submit">
+                    <span class="btn-text">가입하기</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal (DB insert representation) -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-card">
+            <div class="success-icon-wrapper">
+                <div class="success-icon-bg"></div>
+                <i class="fa-solid fa-check success-check-icon"></i>
+            </div>
+            <h2>회원가입이 완료되었습니다!</h2>
+            <p class="modal-subtext">영진전문대학교의 회원이 되신 것을 환영합니다.</p>
+            
+            <div class="db-mock-display">
+                <h3><i class="fa-solid fa-database"></i> Database INSERT Mock</h3>
+                <p class="db-desc">DB 설계서 규칙에 따라 가상으로 데이터베이스에 저장된 레코드입니다.</p>
+                <div class="db-table-container">
+                    <table class="db-table">
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>number (PK)</td>
+                                <td id="db-number" class="highlight-val">1</td>
+                            </tr>
+                            <tr>
+                                <td>user_id</td>
+                                <td id="db-userid"></td>
+                            </tr>
+                            <tr>
+                                <td>password (hashed)</td>
+                                <td id="db-password" class="hash-val"></td>
+                            </tr>
+                            <tr>
+                                <td>email</td>
+                                <td id="db-email"></td>
+                            </tr>
+                            <tr>
+                                <td>phone</td>
+                                <td id="db-phone"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <button type="button" class="btn-modal-close" id="btn-modal-close">확인</button>
+        </div>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+</html>
