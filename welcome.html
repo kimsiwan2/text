@@ -234,29 +234,26 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Retrieve the registered user data from local storage
-            const users = JSON.parse(localStorage.getItem('yju_users')) || [];
+            // Retrieve the active logged-in user session
+            const activeUser = JSON.parse(localStorage.getItem('yju_active_user'));
             
-            if (users.length === 0) {
-                // If no user exists, redirect back to signup page
-                window.location.href = 'index.html';
+            if (!activeUser) {
+                // If no active user session, redirect to login page
+                window.location.href = 'login.html';
                 return;
             }
 
-            // Get the last registered user
-            const latestUser = users[users.length - 1];
+            // Render profile details
+            document.getElementById('username-display').textContent = activeUser.user_id;
+            document.getElementById('profile-number').textContent = activeUser.number;
+            document.getElementById('profile-id').textContent = activeUser.user_id;
+            document.getElementById('profile-email').textContent = activeUser.email;
+            document.getElementById('profile-phone').textContent = activeUser.phone;
 
-            // Render details
-            document.getElementById('username-display').textContent = latestUser.user_id;
-            document.getElementById('profile-number').textContent = latestUser.number;
-            document.getElementById('profile-id').textContent = latestUser.user_id;
-            document.getElementById('profile-email').textContent = latestUser.email;
-            document.getElementById('profile-phone').textContent = latestUser.phone;
-
-            // Logout Action (Clear mockup and redirect)
+            // Logout Action (Clear active session and redirect to login)
             document.getElementById('btn-logout').addEventListener('click', () => {
-                // We can clear the users list or just redirect
-                window.location.href = 'index.html';
+                localStorage.removeItem('yju_active_user');
+                window.location.href = 'login.html';
             });
         });
     </script>
