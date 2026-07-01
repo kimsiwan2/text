@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영진전문대학교 - 환영합니다</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --yju-primary: #003764;
+            --yju-secondary: #0c2340;
+            --yju-accent: #f7b500;
+            --background: #0a0f1d;
+            --card-bg: rgba(16, 35, 64, 0.4);
+            --card-border: rgba(247, 181, 0, 0.15);
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --white: #ffffff;
+            --font-sans: 'Outfit', 'Noto Sans KR', sans-serif;
+            --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(0, 55, 100, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        .bg-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 55, 100, 0.3) 0%, rgba(247, 181, 0, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            filter: blur(80px);
+        }
+
+        .welcome-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-premium);
+            text-align: center;
+            animation: card-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes card-appear {
+            0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            filter: drop-shadow(0 0 15px rgba(247, 181, 0, 0.25));
+        }
+
+        .yju-logo {
+            width: 100%;
+            height: 100%;
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--white);
+        }
+
+        .welcome-title span {
+            color: var(--yju-accent);
+        }
+
+        .welcome-subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 35px;
+        }
+
+        /* Profile details list */
+        .profile-container {
+            background: rgba(7, 15, 29, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: left;
+            margin-bottom: 35px;
+        }
+
+        .profile-title {
+            font-size: 14px;
+            color: var(--yju-accent);
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+        }
+
+        .profile-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-label {
+            color: var(--text-muted);
+        }
+
+        .profile-val {
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        /* Navigation Buttons */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--yju-primary) 0%, var(--yju-secondary) 100%);
+            color: var(--white);
+            border: 1px solid rgba(247, 181, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(247, 181, 0, 0.2);
+            border-color: var(--yju-accent);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="welcome-card">
+        <div class="logo-container">
+            <svg class="yju-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 10 L85 25 V55 C85 75 68 90 50 95 C32 90 15 75 15 55 V25 L50 10 Z" fill="var(--yju-primary)" stroke="var(--yju-accent)" stroke-width="4"/>
+                <path d="M35 35 L50 52 L65 35" stroke="var(--white)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M50 52 V75" stroke="var(--white)" stroke-width="6" stroke-linecap="round"/>
+                <path d="M30 65 Q50 72 70 65" stroke="var(--yju-accent)" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1 class="welcome-title"><span id="username-display">사용자</span>님, 환영합니다!</h1>
+        <p class="welcome-subtitle">영진전문대학교 회원 정보가 정상 등록되었습니다.</p>
+
+        <div class="profile-container">
+            <div class="profile-title">
+                <i class="fa-solid fa-address-card"></i> 등록된 내 정보 (DB 레코드)
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">회원 번호 (PK)</span>
+                <span class="profile-val" id="profile-number">-</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">아이디</span>
+                <span class="profile-val" id="profile-id">-</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">이메일</span>
+                <span class="profile-val" id="profile-email">-</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">전화번호</span>
+                <span class="profile-val" id="profile-phone">-</span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="index.html" class="btn btn-primary"><i class="fa-solid fa-house"></i> 메인으로 돌아가기</a>
+            <button id="btn-logout" class="btn btn-secondary"><i class="fa-solid fa-sign-out-alt"></i> 로그아웃 (Mock)</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve the registered user data from local storage
+            const users = JSON.parse(localStorage.getItem('yju_users')) || [];
+            
+            if (users.length === 0) {
+                // If no user exists, redirect back to signup page
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Get the last registered user
+            const latestUser = users[users.length - 1];
+
+            // Render details
+            document.getElementById('username-display').textContent = latestUser.user_id;
+            document.getElementById('profile-number').textContent = latestUser.number;
+            document.getElementById('profile-id').textContent = latestUser.user_id;
+            document.getElementById('profile-email').textContent = latestUser.email;
+            document.getElementById('profile-phone').textContent = latestUser.phone;
+
+            // Logout Action (Clear mockup and redirect)
+            document.getElementById('btn-logout').addEventListener('click', () => {
+                // We can clear the users list or just redirect
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>
