@@ -1,8 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Supabase Client
+    const supabaseUrl = 'https://aefmfqxtujaclvhudnfy.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZm1mcXh0dWphY2x2aHVkbmZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NjAyMDcsImV4cCI6MjA5ODQzNjIwN30.xEZ9PzkMAxMxfsj5cAWlw4SUmxEEJIzUNxuR-bAmQSc';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
     const form = document.getElementById('signup-form');
     const userIdInput = document.getElementById('user_id');
     const passwordInput = document.getElementById('password');
     const passwordConfirmInput = document.getElementById('password_confirm');
+    const nameInput = document.getElementById('name');
+    const nicknameInput = document.getElementById('nickname');
     const emailInput = document.getElementById('email');
     const phoneInput = document.getElementById('phone');
     const agreeTermsInput = document.getElementById('agree_terms');
@@ -186,7 +193,29 @@ document.addEventListener('DOMContentLoaded', () => {
             validatePasswordConfirm();
         }
     });
+    function validateName() {
+        const value = nameInput.value.trim();
+        const group = document.getElementById('group-name');
+        
+        if (value === '') {
+            return setStatus(group, false, '이름을 입력해 주세요.');
+        }
+        return setStatus(group, true);
+    }
+
+    function validateNickname() {
+        const value = nicknameInput.value.trim();
+        const group = document.getElementById('group-nickname');
+        
+        if (value === '') {
+            return setStatus(group, false, '닉네임을 입력해 주세요.');
+        }
+        return setStatus(group, true);
+    }
+
     passwordConfirmInput.addEventListener('input', validatePasswordConfirm);
+    nameInput.addEventListener('input', validateName);
+    nicknameInput.addEventListener('input', validateNickname);
     emailInput.addEventListener('input', validateEmail);
 
     // Terms and Conditions checkbox event listener
@@ -216,13 +245,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Form Submission
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         // Validate all fields
         const isIdValid = validateId();
         const isPwValid = validatePassword();
         const isPwConfirmValid = validatePasswordConfirm();
+        const isNameValid = validateName();
+        const isNicknameValid = validateNickname();
         const isEmailValid = validateEmail();
         const isPhoneValid = validatePhone();
         
@@ -243,45 +274,106 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isIdValid) { userIdInput.focus(); return; }
         if (!isPwValid) { passwordInput.focus(); return; }
         if (!isPwConfirmValid) { passwordConfirmInput.focus(); return; }
+        if (!isNameValid) { nameInput.focus(); return; }
+        if (!isNicknameValid) { nicknameInput.focus(); return; }
         if (!isEmailValid) { emailInput.focus(); return; }
         if (!isPhoneValid) { phoneInput.focus(); return; }
         if (!isTermsValid) { agreeTermsInput.focus(); return; }
 
-        // Process successful registration (Mock database storage)
         const userId = userIdInput.value.trim();
         const plainPassword = passwordInput.value;
+        const name = nameInput.value.trim();
+        const nickname = nicknameInput.value.trim();
         const email = emailInput.value.trim();
         const phone = phoneInput.value.trim();
         const hashedPassword = generateMockHash(plainPassword);
 
-        // Retrieve existing users from LocalStorage to determine next primary key (number)
-        let users = JSON.parse(localStorage.getItem('yju_users')) || [];
-        const nextIdNumber = users.length > 0 ? users[users.length - 1].number + 1 : 1;
+        const submitBtn = document.getElementById('btn-submit');
+        const originalBtnHTML = submitBtn.innerHTML;
 
-        const newUser = {
-            number: nextIdNumber,
-            user_id: userId,
-            password: hashedPassword,
-            email: email,
-            phone: phone,
-            created_at: new Date().toISOString()
-        };
+        try {
+            // Disable button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+            submitBtn.innerHTML = '<span class="btn-text">가입 처리 중...</span><i class="fa-solid fa-spinner fa-spin"></i>';
 
-        // Save record to local storage
-        users.push(newUser);
-        localStorage.setItem('yju_users', JSON.stringify(users));
-        localStorage.setItem('yju_active_user', JSON.stringify(newUser));
+            // Check if user_id already exists in Supabase
+            const { data: existingUser, error: checkIdError } = await _supabase
+                .from('members')
+                .select('user_id')
+                .eq('user_id', userId)
+                .maybeSingle();
 
-        // Populate Success Modal Fields
-        document.getElementById('db-number').textContent = newUser.number;
-        document.getElementById('db-userid').textContent = newUser.user_id;
-        document.getElementById('db-password').textContent = newUser.password;
-        document.getElementById('db-email').textContent = newUser.email;
-        document.getElementById('db-phone').textContent = newUser.phone;
+            if (checkIdError) throw checkIdError;
+            if (existingUser) {
+                setStatus(document.getElementById('group-id'), false, '이미 사용 중인 아이디입니다.');
+                userIdInput.focus();
+                return;
+            }
 
-        // Open Modal
-        const modal = document.getElementById('success-modal');
-        modal.classList.add('active');
+            // Check if email already exists in Supabase
+            const { data: existingEmail, error: checkEmailError } = await _supabase
+                .from('members')
+                .select('email')
+                .eq('email', email)
+                .maybeSingle();
+
+            if (checkEmailError) throw checkEmailError;
+            if (existingEmail) {
+                setStatus(document.getElementById('group-email'), false, '이미 사용 중인 이메일입니다.');
+                emailInput.focus();
+                return;
+            }
+
+            // Insert new user into Supabase members table
+            const { data: insertedUser, error: insertError } = await _supabase
+                .from('members')
+                .insert([{
+                    user_id: userId,
+                    password: hashedPassword,
+                    name: name,
+                    nickname: nickname,
+                    email: email,
+                    phone: phone
+                }])
+                .select()
+                .single();
+
+            if (insertError) throw insertError;
+
+            // Save session to LocalStorage (so welcome.html can read it)
+            localStorage.setItem('yju_active_user', JSON.stringify(insertedUser));
+
+            // Populate Success Modal Fields with actual DB values
+            document.getElementById('db-number').textContent = insertedUser.number;
+            document.getElementById('db-userid').textContent = insertedUser.user_id;
+            document.getElementById('db-password').textContent = insertedUser.password;
+            document.getElementById('db-email').textContent = insertedUser.email;
+            document.getElementById('db-phone').textContent = insertedUser.phone;
+
+            // Also update the heading in the database display section (make it feel premium)
+            const dbMockDisplay = document.querySelector('.db-mock-display h3');
+            if (dbMockDisplay) {
+                dbMockDisplay.innerHTML = '<i class="fa-solid fa-database"></i> Supabase Database INSERT';
+            }
+            const dbDesc = document.querySelector('.db-desc');
+            if (dbDesc) {
+                dbDesc.textContent = 'Supabase PostgreSQL 데이터베이스에 성공적으로 실시간 저장된 레코드입니다.';
+            }
+
+            // Open Modal
+            const modal = document.getElementById('success-modal');
+            modal.classList.add('active');
+
+        } catch (error) {
+            console.error('Registration failed:', error);
+            alert('회원가입 처리 중 오류가 발생했습니다: ' + error.message);
+        } finally {
+            // Restore button state if not successful (though if successful it redirects or opens modal)
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.innerHTML = originalBtnHTML;
+        }
     });
 
     // Close Modal and Redirect to welcome page

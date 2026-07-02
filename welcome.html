@@ -188,6 +188,74 @@
             background: rgba(255, 255, 255, 0.1);
             color: var(--white);
         }
+
+        /* Modal & Toast Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(10, 15, 29, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow-premium);
+            animation: modal-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        @keyframes modal-appear {
+            0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: -350px;
+            background: rgba(16, 185, 129, 0.9);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            backdrop-filter: blur(10px);
+            color: var(--white);
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 3000;
+            transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast-notification.active {
+            right: 20px;
+        }
+        .toast-notification.error-toast {
+            background: rgba(244, 63, 94, 0.9);
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+        .toast-notification i {
+            font-size: 18px;
+        }
+        
+        /* Transition animations */
+        #settings-content {
+            transition: all 0.3s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -217,6 +285,14 @@
                 <span class="profile-val" id="profile-id">-</span>
             </div>
             <div class="profile-item">
+                <span class="profile-label">이름</span>
+                <span class="profile-val" id="profile-name">-</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">닉네임</span>
+                <span class="profile-val" id="profile-nickname">-</span>
+            </div>
+            <div class="profile-item">
                 <span class="profile-label">이메일</span>
                 <span class="profile-val" id="profile-email">-</span>
             </div>
@@ -226,34 +302,265 @@
             </div>
         </div>
 
+        <!-- Collapsible Account Settings -->
+        <div class="settings-container" style="background: rgba(7, 15, 29, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 20px; text-align: left; margin-bottom: 35px;">
+            <div class="settings-title" style="font-size: 14px; color: var(--yju-accent); font-weight: 600; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" id="toggle-settings">
+                <span><i class="fa-solid fa-user-gear"></i> 계정 관리 설정</span>
+                <i class="fa-solid fa-chevron-down" id="settings-chevron" style="transition: transform 0.3s;"></i>
+            </div>
+            
+            <div id="settings-content" style="display: none; flex-direction: column; gap: 20px; margin-top: 15px;">
+                <!-- Password Change Form -->
+                <div style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 20px;">
+                    <h4 style="font-size: 13px; color: var(--white); margin-bottom: 10px; font-weight: 600;"><i class="fa-regular fa-key"></i> 비밀번호 변경</h4>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="password" id="current-password" placeholder="현재 비밀번호" style="width: 100%; padding: 10px 12px; background: rgba(7, 15, 29, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: var(--white); font-size: 14px; outline: none; transition: border-color 0.3s;">
+                        <input type="password" id="new-password" placeholder="새 비밀번호 (8자 이상)" style="width: 100%; padding: 10px 12px; background: rgba(7, 15, 29, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: var(--white); font-size: 14px; outline: none; transition: border-color 0.3s;">
+                        <input type="password" id="confirm-new-password" placeholder="새 비밀번호 확인" style="width: 100%; padding: 10px 12px; background: rgba(7, 15, 29, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: var(--white); font-size: 14px; outline: none; transition: border-color 0.3s;">
+                        <button type="button" id="btn-change-password" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(247, 181, 0, 0.3); background: rgba(0, 55, 100, 0.4); color: var(--white); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;">변경하기</button>
+                    </div>
+                </div>
+                
+                <!-- Delete Account Section -->
+                <div>
+                    <h4 style="font-size: 13px; color: var(--white); margin-bottom: 10px; font-weight: 600;"><i class="fa-regular fa-trash-can"></i> 회원 탈퇴</h4>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4;">탈퇴 시 모든 회원 정보가 즉시 삭제되며 복구할 수 없습니다.</p>
+                    <button type="button" id="btn-delete-account" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.15); color: var(--error); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s;">회원 탈퇴하기</button>
+                </div>
+            </div>
+        </div>
+
         <div class="btn-group">
-            <a href="index.html" class="btn btn-primary"><i class="fa-solid fa-house"></i> 메인으로 돌아가기</a>
-            <button id="btn-logout" class="btn btn-secondary"><i class="fa-solid fa-sign-out-alt"></i> 로그아웃 (Mock)</button>
+            <a href="index.html?v=2" class="btn btn-primary"><i class="fa-solid fa-house"></i> 메인으로 돌아가기</a>
+            <button id="btn-logout" class="btn btn-secondary"><i class="fa-solid fa-sign-out-alt"></i> 로그아웃</button>
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-confirm-modal">
+        <div class="modal-content" style="text-align: center;">
+            <h3 style="font-size: 18px; font-weight: 700; color: var(--error); margin-bottom: 15px;"><i class="fa-solid fa-triangle-exclamation"></i> 정말 탈퇴하시겠습니까?</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5;">회원탈퇴 진행 시 모든 계정 정보가 Supabase DB에서 완전히 삭제되며, 이 작업은 되돌릴 수 없습니다.</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" id="btn-confirm-delete" style="padding: 12px 24px; border-radius: 10px; border: none; background: var(--error); color: var(--white); font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px;">탈퇴 완료</button>
+                <button type="button" id="btn-cancel-delete" style="padding: 12px 24px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.05); color: var(--text-muted); font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 14px;">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Toast Notification -->
+    <div class="toast-notification" id="status-toast">
+        <i id="toast-icon" class="fa-solid fa-circle-check"></i>
+        <span id="toast-message">비밀번호가 변경되었습니다.</span>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Supabase Client
+            const supabaseUrl = 'https://aefmfqxtujaclvhudnfy.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZm1mcXh0dWphY2x2aHVkbmZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NjAyMDcsImV4cCI6MjA5ODQzNjIwN30.xEZ9PzkMAxMxfsj5cAWlw4SUmxEEJIzUNxuR-bAmQSc';
+            const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
             // Retrieve the active logged-in user session
             const activeUser = JSON.parse(localStorage.getItem('yju_active_user'));
             
             if (!activeUser) {
                 // If no active user session, redirect to login page
-                window.location.href = 'login.html';
+                window.location.href = 'login.html?v=2';
                 return;
             }
 
             // Render profile details
-            document.getElementById('username-display').textContent = activeUser.user_id;
+            document.getElementById('username-display').textContent = activeUser.nickname || activeUser.user_id;
             document.getElementById('profile-number').textContent = activeUser.number;
             document.getElementById('profile-id').textContent = activeUser.user_id;
+            document.getElementById('profile-name').textContent = activeUser.name || '-';
+            document.getElementById('profile-nickname').textContent = activeUser.nickname || '-';
             document.getElementById('profile-email').textContent = activeUser.email;
-            document.getElementById('profile-phone').textContent = activeUser.phone;
+            document.getElementById('profile-phone').textContent = activeUser.phone || '-';
+
+            // Toast Helper
+            const statusToast = document.getElementById('status-toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastMessage = document.getElementById('toast-message');
+            let toastTimeout;
+
+            function showToast(message, isError = false) {
+                toastMessage.textContent = message;
+                if (isError) {
+                    statusToast.classList.add('error-toast');
+                    toastIcon.className = 'fa-solid fa-triangle-exclamation';
+                } else {
+                    statusToast.classList.remove('error-toast');
+                    toastIcon.className = 'fa-solid fa-circle-check';
+                }
+                statusToast.classList.add('active');
+                
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    statusToast.classList.remove('active');
+                }, 3500);
+            }
+
+            // Password Hash function
+            function generateMockHash(password) {
+                let hash1 = 0, hash2 = 0;
+                const salt = "YJU_University_Security_Salt_Key";
+                const combined = password + salt;
+                
+                for (let i = 0; i < combined.length; i++) {
+                    const ch = combined.charCodeAt(i);
+                    hash1 = (hash1 << 5) - hash1 + ch;
+                    hash1 |= 0;
+                    hash2 = (hash2 << 7) - hash2 + ch;
+                    hash2 |= 0;
+                }
+                
+                const hashStr = Math.abs(hash1).toString(16).padStart(8, '0') + Math.abs(hash2).toString(16).padStart(8, '0');
+                return `$bcrypt$2b$12$${hashStr.substring(0, 22)}...`;
+            }
+
+            // Collapsible settings logic
+            const toggleSettings = document.getElementById('toggle-settings');
+            const settingsContent = document.getElementById('settings-content');
+            const settingsChevron = document.getElementById('settings-chevron');
+
+            toggleSettings.addEventListener('click', () => {
+                if (settingsContent.style.display === 'none') {
+                    settingsContent.style.display = 'flex';
+                    settingsChevron.style.transform = 'rotate(180deg)';
+                } else {
+                    settingsContent.style.display = 'none';
+                    settingsChevron.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            // Change Password Action
+            const btnChangePassword = document.getElementById('btn-change-password');
+            btnChangePassword.addEventListener('click', async () => {
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmNewPassword = document.getElementById('confirm-new-password').value;
+
+                if (!currentPassword || !newPassword || !confirmNewPassword) {
+                    showToast('모든 비밀번호 필드를 입력해 주세요.', true);
+                    return;
+                }
+
+                if (newPassword.length < 8) {
+                    showToast('새 비밀번호는 8자 이상이어야 합니다.', true);
+                    return;
+                }
+
+                if (newPassword !== confirmNewPassword) {
+                    showToast('새 비밀번호와 확인이 일치하지 않습니다.', true);
+                    return;
+                }
+
+                const originalBtnHTML = btnChangePassword.innerHTML;
+                try {
+                    btnChangePassword.disabled = true;
+                    btnChangePassword.style.opacity = '0.7';
+                    btnChangePassword.innerHTML = '변경 중... <i class="fa-solid fa-spinner fa-spin"></i>';
+
+                    const currentHash = generateMockHash(currentPassword);
+
+                    // 1. Verify current password
+                    const { data: matchedUser, error: queryError } = await _supabase
+                        .from('members')
+                        .select('password')
+                        .eq('user_id', activeUser.user_id)
+                        .eq('password', currentHash)
+                        .maybeSingle();
+
+                    if (queryError) throw queryError;
+
+                    if (!matchedUser) {
+                        showToast('현재 비밀번호가 일치하지 않습니다.', true);
+                        return;
+                    }
+
+                    // 2. Update to new password
+                    const newHash = generateMockHash(newPassword);
+                    const { error: updateError } = await _supabase
+                        .from('members')
+                        .update({ password: newHash, updated_at: new Date().toISOString() })
+                        .eq('user_id', activeUser.user_id);
+
+                    if (updateError) throw updateError;
+
+                    // Success!
+                    showToast('비밀번호가 성공적으로 변경되었습니다!');
+                    document.getElementById('current-password').value = '';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-new-password').value = '';
+                    
+                    // Update cached user password
+                    activeUser.password = newHash;
+                    localStorage.setItem('yju_active_user', JSON.stringify(activeUser));
+                } catch (err) {
+                    console.error('Password change error:', err);
+                    showToast('비밀번호 변경 중 오류가 발생했습니다: ' + err.message, true);
+                } finally {
+                    btnChangePassword.disabled = false;
+                    btnChangePassword.style.opacity = '1';
+                    btnChangePassword.innerHTML = originalBtnHTML;
+                }
+            });
+
+            // Delete Account Modal Actions
+            const btnDeleteAccount = document.getElementById('btn-delete-account');
+            const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+            const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+            const btnCancelDelete = document.getElementById('btn-cancel-delete');
+
+            btnDeleteAccount.addEventListener('click', () => {
+                deleteConfirmModal.classList.add('active');
+            });
+
+            btnCancelDelete.addEventListener('click', () => {
+                deleteConfirmModal.classList.remove('active');
+            });
+
+            deleteConfirmModal.addEventListener('click', (e) => {
+                if (e.target === deleteConfirmModal) {
+                    deleteConfirmModal.classList.remove('active');
+                }
+            });
+
+            btnConfirmDelete.addEventListener('click', async () => {
+                try {
+                    btnConfirmDelete.disabled = true;
+                    btnConfirmDelete.style.opacity = '0.7';
+                    btnConfirmDelete.textContent = '탈퇴 중...';
+
+                    const { error: deleteError } = await _supabase
+                        .from('members')
+                        .delete()
+                        .eq('user_id', activeUser.user_id);
+
+                    if (deleteError) throw deleteError;
+
+                    // Clear session and redirect
+                    localStorage.removeItem('yju_active_user');
+                    deleteConfirmModal.classList.remove('active');
+                    alert('회원탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.');
+                    window.location.href = 'login.html?v=2';
+                } catch (err) {
+                    console.error('Delete account error:', err);
+                    alert('탈퇴 처리 중 오류가 발생했습니다: ' + err.message);
+                    btnConfirmDelete.disabled = false;
+                    btnConfirmDelete.style.opacity = '1';
+                    btnConfirmDelete.textContent = '탈퇴 완료';
+                }
+            });
 
             // Logout Action (Clear active session and redirect to login)
             document.getElementById('btn-logout').addEventListener('click', () => {
                 localStorage.removeItem('yju_active_user');
-                window.location.href = 'login.html';
+                window.location.href = 'login.html?v=2';
             });
         });
     </script>

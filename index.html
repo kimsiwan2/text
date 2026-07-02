@@ -71,6 +71,27 @@
                     <p class="helper-text">비밀번호 확인을 입력하세요.</p>
                 </div>
 
+                <!-- Name Field -->
+                <div class="input-group" id="group-name">
+                    <label for="name"><i class="fa-regular fa-user"></i> 이름</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="name" name="name" placeholder="실명을 입력해 주세요" required>
+                        <span class="status-icon"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                    <p class="helper-text">이름을 입력해 주세요.</p>
+                </div>
+
+                <!-- Nickname Field -->
+                <div class="input-group" id="group-nickname">
+                    <label for="nickname"><i class="fa-regular fa-id-badge"></i> 닉네임</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="nickname" name="nickname" placeholder="게시판에 표시될 닉네임" required>
+                        <span class="status-icon"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                    <p class="helper-text">닉네임을 입력해 주세요.</p>
+                </div>
+
+
                 <!-- Email Field -->
                 <div class="input-group" id="group-email">
                     <label for="email"><i class="fa-regular fa-envelope"></i> 이메일</label>
@@ -109,7 +130,7 @@
                 <!-- Auth Switch Options -->
                 <p class="auth-switch-text">
                     이미 계정이 있으신가요? 
-                    <a href="login.html">로그인하기</a>
+                    <a href="login.html?v=2">로그인하기</a>
                 </p>
             </form>
         </div>
@@ -166,7 +187,9 @@
         </div>
     </div>
 
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Custom Script -->
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
 </body>
 </html>

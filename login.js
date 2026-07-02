@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Supabase Client
+    const supabaseUrl = 'https://aefmfqxtujaclvhudnfy.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZm1mcXh0dWphY2x2aHVkbmZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NjAyMDcsImV4cCI6MjA5ODQzNjIwN30.xEZ9PzkMAxMxfsj5cAWlw4SUmxEEJIzUNxuR-bAmQSc';
+    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
     const loginForm = document.getElementById('login-form');
     const userIdInput = document.getElementById('user_id');
     const passwordInput = document.getElementById('password');
@@ -70,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Form Submission
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const userId = userIdInput.value.trim();
@@ -99,31 +104,54 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Authenticate credentials against local storage mock DB
-        const users = JSON.parse(localStorage.getItem('yju_users')) || [];
-        const inputHash = generateMockHash(password);
+        const submitBtn = document.getElementById('btn-submit');
+        const originalBtnHTML = submitBtn.innerHTML;
 
-        // Find user by ID and matching password hash
-        const matchedUser = users.find(u => u.user_id === userId && u.password === inputHash);
+        try {
+            // Disable button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+            submitBtn.innerHTML = '<span class="btn-text">로그인 중...</span><i class="fa-solid fa-spinner fa-spin"></i>';
 
-        if (matchedUser) {
-            // Success! Save active user session
-            localStorage.setItem('yju_active_user', JSON.stringify(matchedUser));
+            // Authenticate credentials against Supabase
+            const inputHash = generateMockHash(password);
 
-            // Remember ID handling
-            if (rememberIdCheckbox.checked) {
-                localStorage.setItem('yju_remembered_id', userId);
+            const { data: matchedUser, error: queryError } = await _supabase
+                .from('members')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('password', inputHash)
+                .maybeSingle();
+
+            if (queryError) throw queryError;
+
+            if (matchedUser) {
+                // Success! Save active user session
+                localStorage.setItem('yju_active_user', JSON.stringify(matchedUser));
+
+                // Remember ID handling
+                if (rememberIdCheckbox.checked) {
+                    localStorage.setItem('yju_remembered_id', userId);
+                } else {
+                    localStorage.removeItem('yju_remembered_id');
+                }
+
+                // Redirect to welcome screen
+                window.location.href = 'welcome.html';
             } else {
-                localStorage.removeItem('yju_remembered_id');
+                // Authentication Failure
+                setInputError(userIdInput, groupId, true);
+                setInputError(passwordInput, groupPassword, true);
+                showToast('아이디 또는 비밀번호가 일치하지 않습니다.');
             }
-
-            // Redirect to welcome screen
-            window.location.href = 'welcome.html';
-        } else {
-            // Authentication Failure
-            setInputError(userIdInput, groupId, true);
-            setInputError(passwordInput, groupPassword, true);
-            showToast('아이디 또는 비밀번호가 일치하지 않습니다.');
+        } catch (error) {
+            console.error('Login error:', error);
+            showToast('로그인 중 오류가 발생했습니다: ' + error.message);
+        } finally {
+            // Restore button state
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.innerHTML = originalBtnHTML;
         }
     });
 
@@ -134,4 +162,92 @@ document.addEventListener('DOMContentLoaded', () => {
     passwordInput.addEventListener('input', () => {
         document.getElementById('group-password').classList.remove('error');
     });
+
+    // --- Find ID Modal Logic ---
+    const linkFindId = document.getElementById('link-find-id');
+    const findIdModal = document.getElementById('find-id-modal');
+    const closeFindModalBtn = document.getElementById('close-find-modal');
+    const btnFindId = document.getElementById('btn-find-id');
+    const findNameInput = document.getElementById('find_name');
+    const findEmailInput = document.getElementById('find_email');
+    const findIdResult = document.getElementById('find-id-result');
+
+    if (linkFindId && findIdModal && closeFindModalBtn) {
+        // Open Modal
+        linkFindId.addEventListener('click', (e) => {
+            e.preventDefault();
+            findIdModal.classList.add('active');
+            findNameInput.value = '';
+            findEmailInput.value = '';
+            findIdResult.style.display = 'none';
+            findIdResult.textContent = '';
+        });
+
+        // Close Modal
+        closeFindModalBtn.addEventListener('click', () => {
+            findIdModal.classList.remove('active');
+        });
+
+        // Close Modal when clicking outside
+        findIdModal.addEventListener('click', (e) => {
+            if (e.target === findIdModal) {
+                findIdModal.classList.remove('active');
+            }
+        });
+
+        // Find ID Query
+        btnFindId.addEventListener('click', async () => {
+            const name = findNameInput.value.trim();
+            const email = findEmailInput.value.trim();
+
+            if (!name || !email) {
+                findIdResult.style.display = 'block';
+                findIdResult.style.background = 'rgba(244, 63, 94, 0.1)';
+                findIdResult.style.border = '1px solid rgba(244, 63, 94, 0.3)';
+                findIdResult.style.color = 'var(--error)';
+                findIdResult.textContent = '이름과 이메일을 모두 입력해 주세요.';
+                return;
+            }
+
+            const originalBtnHTML = btnFindId.innerHTML;
+            try {
+                btnFindId.disabled = true;
+                btnFindId.style.opacity = '0.7';
+                btnFindId.innerHTML = '<span class="btn-text">조회 중...</span><i class="fa-solid fa-spinner fa-spin"></i>';
+
+                const { data: matchedUser, error: queryError } = await _supabase
+                    .from('members')
+                    .select('user_id')
+                    .eq('name', name)
+                    .eq('email', email)
+                    .maybeSingle();
+
+                if (queryError) throw queryError;
+
+                findIdResult.style.display = 'block';
+                if (matchedUser) {
+                    findIdResult.style.background = 'rgba(16, 185, 129, 0.1)';
+                    findIdResult.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+                    findIdResult.style.color = 'var(--success)';
+                    findIdResult.innerHTML = `조회 완료!<br>회원님의 아이디는 <strong style="color: var(--white); font-size: 16px;">${matchedUser.user_id}</strong> 입니다.`;
+                } else {
+                    findIdResult.style.background = 'rgba(244, 63, 94, 0.1)';
+                    findIdResult.style.border = '1px solid rgba(244, 63, 94, 0.3)';
+                    findIdResult.style.color = 'var(--error)';
+                    findIdResult.textContent = '일치하는 회원 정보가 없습니다.';
+                }
+            } catch (error) {
+                console.error('Find ID error:', error);
+                findIdResult.style.display = 'block';
+                findIdResult.style.background = 'rgba(244, 63, 94, 0.1)';
+                findIdResult.style.border = '1px solid rgba(244, 63, 94, 0.3)';
+                findIdResult.style.color = 'var(--error)';
+                findIdResult.textContent = '조회 중 오류가 발생했습니다.';
+            } finally {
+                btnFindId.disabled = false;
+                btnFindId.style.opacity = '1';
+                btnFindId.innerHTML = originalBtnHTML;
+            }
+        });
+    }
 });
