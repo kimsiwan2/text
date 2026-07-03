@@ -187,7 +187,11 @@
 
                 <!-- Auth Switch Options -->
                 <p class="auth-switch-text" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <a href="#" id="link-find-id" style="color: var(--text-muted); font-size: 13px; font-weight: 500;"><i class="fa-regular fa-circle-question"></i> 아이디 찾기</a>
+                    <span style="display: flex; gap: 12px; align-items: center;">
+                        <a href="#" id="link-find-id" style="color: var(--text-muted); font-size: 13px; font-weight: 500;"><i class="fa-regular fa-circle-question"></i> 아이디 찾기</a>
+                        <span style="color: rgba(255,255,255,0.15)">|</span>
+                        <a href="#" id="link-find-password" style="color: var(--text-muted); font-size: 13px; font-weight: 500;"><i class="fa-regular fa-key"></i> 비밀번호 찾기</a>
+                    </span>
                     <span>
                         아직 회원이 아니신가요? 
                         <a href="index.html?v=2">회원가입</a>
@@ -221,6 +225,68 @@
                     <span class="btn-text">아이디 조회</span>
                 </button>
                 <div class="find-result" id="find-id-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Find Password Modal -->
+    <div class="modal" id="find-password-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fa-solid fa-key"></i> 비밀번호 찾기 (재설정)</h3>
+                <button type="button" class="close-btn" id="close-password-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <!-- Step 1: User Verification -->
+                <div id="pw-step1" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="input-group" id="group-find-pw-userid" style="gap: 8px;">
+                        <label for="find_pw_userid" style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;"><i class="fa-regular fa-user" style="color: var(--yju-accent);"></i> 아이디</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="find_pw_userid" placeholder="아이디를 입력해 주세요" required>
+                        </div>
+                    </div>
+                    <div class="input-group" id="group-find-pw-name" style="gap: 8px;">
+                        <label for="find_pw_name" style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;"><i class="fa-regular fa-user" style="color: var(--yju-accent);"></i> 이름</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="find_pw_name" placeholder="실명을 입력해 주세요" required>
+                        </div>
+                    </div>
+                    <div class="input-group" id="group-find-pw-email" style="gap: 8px;">
+                        <label for="find_pw_email" style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;"><i class="fa-regular fa-envelope" style="color: var(--yju-accent);"></i> 이메일</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="find_pw_email" placeholder="example@email.com" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-submit" id="btn-verify-user" style="margin-top: 10px; width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; background: linear-gradient(135deg, var(--yju-primary) 0%, var(--yju-secondary) 100%); color: var(--white);">
+                        <span class="btn-text">정보 확인</span>
+                    </button>
+                </div>
+
+                <!-- Step 2: Password Reset -->
+                <div id="pw-step2" style="display: none; flex-direction: column; gap: 15px;">
+                    <p style="font-size: 13px; color: var(--success); text-align: center; font-weight: 500; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px; line-height: 1.4;">
+                        회원 정보가 확인되었습니다.<br>새 비밀번호를 설정해 주세요.
+                    </p>
+                    <div class="input-group" id="group-new-pw" style="gap: 8px;">
+                        <label for="new_pw" style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;"><i class="fa-regular fa-key" style="color: var(--yju-accent);"></i> 새 비밀번호</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="new_pw" placeholder="영문, 숫자, 특수문자 조합 8자 이상" required>
+                            <button type="button" class="toggle-password" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="input-group" id="group-new-pw-confirm" style="gap: 8px;">
+                        <label for="new_pw_confirm" style="font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;"><i class="fa-regular fa-circle-check" style="color: var(--yju-accent);"></i> 새 비밀번호 확인</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="new_pw_confirm" placeholder="새 비밀번호를 다시 입력해 주세요" required>
+                            <button type="button" class="toggle-password" tabindex="-1"><i class="fa-regular fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-submit" id="btn-reset-pw" style="margin-top: 10px; width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; background: linear-gradient(135deg, var(--yju-primary) 0%, var(--yju-secondary) 100%); color: var(--white);">
+                        <span class="btn-text">비밀번호 재설정 완료</span>
+                    </button>
+                </div>
+
+                <div class="find-result" id="find-pw-result" style="display: none; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 12px; padding: 15px; color: var(--error); text-align: center; font-weight: 600; margin-top: 10px; line-height: 1.4;"></div>
             </div>
         </div>
     </div>
